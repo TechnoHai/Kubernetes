@@ -1,12 +1,24 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: webserver-service
-  namespace: webserver
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      nodePort: 30001
-  selector:
-    name: webserver
+version: "3"
+#create 2 presisntent volumes , the volumes will get the dokcer name : piehole_app
+#need to declaer the volumes outside the service
+volumes:
+  app:
+  config:
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "81:80/tcp"
+    environment:
+      TZ: 'Asia/Jerusalem'
+      WEBPASSWORD: 'Ss@56243971'
+    #maps each folder to presisntent volume
+    volumes:
+      - app:/etc/pihole/
+      - config:/etc/dnsmasq.d/
+
+    restart: unless-stopped
